@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f5ef">
+  <meta name="description" content="毎日かんたんに続けられる、端末保存の家計簿">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>つづく家計簿</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="brand-mark" aria-hidden="true">つ</div>
+      <div class="brand-copy"><span class="eyebrow">毎日を、ちょっと整える。</span><strong>つづく家計簿</strong></div>
+      <span class="header-date" id="header-date"></span>
+    </header>
+
+    <main id="main-content">
+      <section id="home-screen" class="screen" aria-labelledby="home-title">
+        <div class="page-heading">
+          <p class="eyebrow">OVERVIEW</p>
+          <h1 id="home-title">今月のお金</h1>
+          <p class="muted" id="home-month"></p>
+        </div>
+        <section class="balance-card" aria-label="今月の差額">
+          <div class="balance-card-decoration" aria-hidden="true"></div>
+          <p class="balance-label">今月の差額</p>
+          <p class="balance-amount" id="home-balance">¥0</p>
+          <p class="balance-hint">収入から支出を引いた金額</p>
+        </section>
+        <div class="summary-grid" aria-label="今月の集計">
+          <div class="summary-card"><span class="summary-icon income-icon" aria-hidden="true">↗</span><span class="summary-label">＋ 収入</span><strong id="home-income">¥0</strong></div>
+          <div class="summary-card"><span class="summary-icon expense-icon" aria-hidden="true">↙</span><span class="summary-label">− 支出</span><strong id="home-expense">¥0</strong></div>
+        </div>
+        <div class="section-heading"><div><p class="eyebrow">RECENT</p><h2>最近の記録</h2></div><button class="text-button" type="button" data-go="history">すべて見る <span aria-hidden="true">→</span></button></div>
+        <div id="recent-list" class="entry-list"></div>
+      </section>
+
+      <section id="history-screen" class="screen" aria-labelledby="history-title" hidden>
+        <div class="page-heading"><p class="eyebrow">HISTORY</p><h1 id="history-title">記録を振り返る</h1><p class="muted">月ごとの収入と支出</p></div>
+        <div class="month-picker" aria-label="表示する月"><button id="previous-month" type="button" aria-label="前の月">‹</button><strong id="history-month"></strong><button id="next-month" type="button" aria-label="次の月">›</button></div>
+        <div class="history-summary"><div><span>＋ 収入</span><strong id="history-income">¥0</strong></div><div><span>− 支出</span><strong id="history-expense">¥0</strong></div><div class="history-balance"><span>差額</span><strong id="history-balance">¥0</strong></div></div>
+        <div class="section-heading"><div><p class="eyebrow">TRANSACTIONS</p><h2>この月の記録</h2></div><span class="count-label" id="history-count"></span></div>
+        <div id="history-list" class="entry-list"></div>
+      </section>
+
+      <section id="settings-screen" class="screen" aria-labelledby="settings-title" hidden>
+        <div class="page-heading"><p class="eyebrow">CUSTOMIZE</p><h1 id="settings-title">カテゴリ設定</h1><p class="muted">あなたの暮らしに合わせて整える</p></div>
+        <section class="settings-card" aria-labelledby="category-form-title"><h2 id="category-form-title">カテゴリを追加</h2><p class="muted">よく使う項目を作っておくと入力がスムーズです。</p>
+          <form id="category-form" novalidate>
+            <div class="field"><label for="category-type">種類</label><select id="category-type" name="type"><option value="expense">支出</option><option value="income">収入</option></select></div>
+            <div class="field"><label for="category-name">カテゴリ名</label><input id="category-name" name="name" maxlength="24" placeholder="例：医療費" autocomplete="off"><p class="field-error" id="category-error" aria-live="polite"></p></div>
+            <button class="primary-button" type="submit">＋ カテゴリを追加</button>
+          </form>
+        </section>
+        <section class="category-section" aria-labelledby="expense-category-title"><div class="section-heading"><h2 id="expense-category-title">支出カテゴリ</h2></div><div id="expense-categories" class="category-list"></div></section>
+        <section class="category-section" aria-labelledby="income-category-title"><div class="section-heading"><h2 id="income-category-title">収入カテゴリ</h2></div><div id="income-categories" class="category-list"></div></section>
+        <p class="privacy-note">データはこの端末のSafari内に保存されます。Safariのデータを消去すると記録も消えるため、ご注意ください。</p>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="メインメニュー">
+      <button class="nav-item is-active" type="button" data-screen="home" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span>ホーム</span></button>
+      <button class="nav-item" type="button" data-screen="history"><span class="nav-icon" aria-hidden="true">▤</span><span>履歴</span></button>
+      <button class="nav-item" type="button" data-screen="settings"><span class="nav-icon" aria-hidden="true">⚙</span><span>設定</span></button>
+    </nav>
+    <button id="add-entry-button" class="floating-add" type="button" aria-label="記録を追加"><span aria-hidden="true">＋</span></button>
+  </div>
+
+  <dialog id="entry-dialog" class="sheet-dialog" aria-labelledby="entry-dialog-title">
+    <form id="entry-form" novalidate>
+      <div class="dialog-handle" aria-hidden="true"></div>
+      <div class="dialog-heading"><div><p class="eyebrow">NEW RECORD</p><h2 id="entry-dialog-title">記録を追加</h2></div><button id="close-entry" class="icon-button" type="button" aria-label="閉じる">×</button></div>
+      <div class="type-toggle" role="group" aria-label="収入または支出"><button type="button" data-type="expense" class="is-selected">− 支出</button><button type="button" data-type="income">＋ 収入</button></div>
+      <input id="entry-type" name="type" type="hidden" value="expense">
+      <div class="field amount-field"><label for="entry-amount">金額</label><div class="amount-input"><span aria-hidden="true">¥</span><input id="entry-amount" name="amount" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="0" autocomplete="off" required></div><p class="field-error" id="amount-error" aria-live="polite"></p></div>
+      <div class="field"><label for="entry-category">カテゴリ</label><select id="entry-category" name="categoryId" required></select><p class="field-error" id="category-id-error" aria-live="polite"></p></div>
+      <div class="field"><label for="entry-date">日付</label><input id="entry-date" name="date" type="date" required><p class="field-error" id="date-error" aria-live="polite"></p></div>
+      <div class="field"><label for="entry-memo">メモ <span class="optional">任意</span></label><input id="entry-memo" name="memo" maxlength="120" placeholder="何に使ったか、ひとこと" autocomplete="off"></div>
+      <button class="primary-button save-button" type="submit">保存する</button>
+      <button id="delete-entry" class="danger-text-button" type="button" hidden>この記録を削除</button>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title"><div class="confirm-content"><h2 id="confirm-title">削除しますか？</h2><p id="confirm-message">この操作は元に戻せません。</p><div class="confirm-actions"><button id="cancel-delete" class="secondary-button" type="button">キャンセル</button><button id="confirm-delete" class="danger-button" type="button">削除する</button></div></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
