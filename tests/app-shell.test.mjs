@@ -6,7 +6,7 @@ test('Japanese mobile app shell exposes three screens and entry form', async () 
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /<html[^>]+lang="ja"/);
   assert.match(html, /name="viewport"[^>]+viewport-fit=cover/);
-  for (const id of ['home-screen', 'history-screen', 'settings-screen', 'entry-dialog', 'entry-form', 'add-entry-button', 'toast']) {
+  for (const id of ['home-screen', 'history-screen', 'settings-screen', 'entry-dialog', 'entry-form', 'add-entry-button', 'data-warning', 'toast']) {
     assert.match(html, new RegExp(`id="${id}"`));
   }
   assert.match(html, /ホーム/);

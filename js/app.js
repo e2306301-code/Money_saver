@@ -294,6 +294,7 @@ $('category-form').addEventListener('submit', event => {
 
 render();
 if (loaded.error) {
+  $('data-warning').hidden = false;
   $('add-entry-button').disabled = true;
   $('category-form').querySelector('button[type="submit"]').disabled = true;
   showToast(loaded.error);

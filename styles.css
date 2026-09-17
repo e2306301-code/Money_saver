@@ -12,6 +12,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .brand-mark{width:39px;height:39px;display:grid;place-items:center;border-radius:13px;background:var(--green);color:#fff;font-size:23px;font-weight:800;box-shadow:0 7px 15px rgba(35,90,72,.2)}
 .brand-copy{display:flex;flex-direction:column;gap:2px}.brand-copy strong{font-size:15px;letter-spacing:.04em}.brand-copy .eyebrow{font-size:10px;letter-spacing:.05em;color:var(--muted)}
 .header-date{margin-left:auto;color:var(--muted);font-size:12px;white-space:nowrap}
+.data-warning{padding:14px 16px;margin:0 0 20px;background:#fff1dc;border:1px solid #edcf96;border-radius:13px;color:#6e4c1b;font-size:12px;line-height:1.65}
 .screen{animation:appear .22s ease}.page-heading{margin-bottom:25px}.page-heading h1{font-size:30px;line-height:1.25;letter-spacing:-.04em;margin:8px 0 7px}.eyebrow{margin:0;color:var(--green);font-size:10px;font-weight:800;letter-spacing:.16em}.muted{color:var(--muted);font-size:13px;line-height:1.7;margin:0}
 .balance-card{position:relative;overflow:hidden;border-radius:26px;padding:26px 27px 25px;background:linear-gradient(125deg,#28644e,#174b3d);color:#fff;min-height:185px;box-shadow:0 18px 35px rgba(25,80,59,.19)}
 .balance-card-decoration{position:absolute;width:220px;height:220px;border:1px solid rgba(255,255,255,.12);border-radius:50%;right:-60px;top:-95px}.balance-card-decoration:after{content:"";position:absolute;inset:31px;border:1px solid rgba(255,255,255,.12);border-radius:50%}
