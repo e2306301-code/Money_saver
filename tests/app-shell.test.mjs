@@ -15,6 +15,14 @@ test('Japanese mobile app shell exposes three screens and entry form', async () 
   assert.match(html, /src="\.\/js\/app\.js"/);
 });
 
+test('app shell exposes carried balance and pay-cycle expense report', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /現在の残高/);
+  assert.match(html, /すべての収入 − すべての支出/);
+  assert.match(html, /id="report-period"/);
+  assert.match(html, /id="expense-breakdown"/);
+});
+
 test('install manifest points to standalone app and usable icons', async () => {
   const manifest = JSON.parse(await readFile(new URL('../manifest.webmanifest', import.meta.url), 'utf8'));
   assert.equal(manifest.name, 'つづく家計簿');

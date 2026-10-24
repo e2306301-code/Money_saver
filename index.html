@@ -27,28 +27,33 @@
       <section id="home-screen" class="screen" aria-labelledby="home-title">
         <div class="page-heading">
           <p class="eyebrow">OVERVIEW</p>
-          <h1 id="home-title">今月のお金</h1>
+          <h1 id="home-title">お金の状況</h1>
           <p class="muted" id="home-month"></p>
         </div>
-        <section class="balance-card" aria-label="今月の差額">
+        <section class="balance-card" aria-label="現在の残高">
           <div class="balance-card-decoration" aria-hidden="true"></div>
-          <p class="balance-label">今月の差額</p>
+          <p class="balance-label">現在の残高</p>
           <p class="balance-amount" id="home-balance">¥0</p>
-          <p class="balance-hint">収入から支出を引いた金額</p>
+          <p class="balance-hint">すべての収入 − すべての支出</p>
         </section>
-        <div class="summary-grid" aria-label="今月の集計">
-          <div class="summary-card"><span class="summary-icon income-icon" aria-hidden="true">↗</span><span class="summary-label">＋ 収入</span><strong id="home-income">¥0</strong></div>
-          <div class="summary-card"><span class="summary-icon expense-icon" aria-hidden="true">↙</span><span class="summary-label">− 支出</span><strong id="home-expense">¥0</strong></div>
+        <div class="summary-grid" aria-label="現在の期間の集計">
+          <div class="summary-card"><span class="summary-icon income-icon" aria-hidden="true">↗</span><span class="summary-label">＋ この期間の収入</span><strong id="home-income">¥0</strong></div>
+          <div class="summary-card"><span class="summary-icon expense-icon" aria-hidden="true">↙</span><span class="summary-label">− この期間の支出</span><strong id="home-expense">¥0</strong></div>
         </div>
         <div class="section-heading"><div><p class="eyebrow">RECENT</p><h2>最近の記録</h2></div><button class="text-button" type="button" data-go="history">すべて見る <span aria-hidden="true">→</span></button></div>
         <div id="recent-list" class="entry-list"></div>
       </section>
 
       <section id="history-screen" class="screen" aria-labelledby="history-title" hidden>
-        <div class="page-heading"><p class="eyebrow">HISTORY</p><h1 id="history-title">記録を振り返る</h1><p class="muted">月ごとの収入と支出</p></div>
-        <div class="month-picker" aria-label="表示する月"><button id="previous-month" type="button" aria-label="前の月">‹</button><strong id="history-month"></strong><button id="next-month" type="button" aria-label="次の月">›</button></div>
+        <div class="page-heading"><p class="eyebrow">REPORT</p><h1 id="history-title">家計レポート</h1><p class="muted">25日から翌月24日までの収入と支出</p></div>
+        <div class="month-picker" aria-label="表示する期間"><button id="previous-month" type="button" aria-label="前の期間">‹</button><strong id="history-month"></strong><button id="next-month" type="button" aria-label="次の期間">›</button></div>
+        <p class="report-period" id="report-period"></p>
         <div class="history-summary"><div><span>＋ 収入</span><strong id="history-income">¥0</strong></div><div><span>− 支出</span><strong id="history-expense">¥0</strong></div><div class="history-balance"><span>差額</span><strong id="history-balance">¥0</strong></div></div>
-        <div class="section-heading"><div><p class="eyebrow">TRANSACTIONS</p><h2>この月の記録</h2></div><span class="count-label" id="history-count"></span></div>
+        <section class="breakdown-section" aria-labelledby="breakdown-title">
+          <div class="section-heading"><div><p class="eyebrow">BREAKDOWN</p><h2 id="breakdown-title">支出の構成比</h2></div><span class="count-label">カテゴリ別</span></div>
+          <div id="expense-breakdown" class="breakdown-list"></div>
+        </section>
+        <div class="section-heading"><div><p class="eyebrow">TRANSACTIONS</p><h2>この期間の記録</h2></div><span class="count-label" id="history-count"></span></div>
         <div id="history-list" class="entry-list"></div>
       </section>
 

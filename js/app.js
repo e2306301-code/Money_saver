@@ -1,4 +1,15 @@
-import { addCategory, entriesForMonth, removeCustomCategory, sortEntriesNewest, summarize, validateEntry } from './domain.js';
+import {
+  addCategory,
+  cycleForDate,
+  cycleFromKey,
+  entriesForCycle,
+  expenseBreakdown,
+  removeCustomCategory,
+  shiftCycle,
+  sortEntriesNewest,
+  summarize,
+  validateEntry,
+} from './domain.js';
 import { createStorage } from './storage.js';
 
 const $ = id => document.getElementById(id);
@@ -7,7 +18,7 @@ const loaded = storage.load();
 let state = loaded.state;
 let dataLocked = loaded.recovered;
 let activeScreen = 'home';
-let viewedMonth = monthKey(new Date());
+let viewedCycleKey = cycleForDate(localDate()).key;
 let editingId = null;
 let pendingDelete = null;
 let toastTimer;
@@ -22,9 +33,18 @@ function localDate(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-function monthKey(date) { return localDate(date).slice(0, 7); }
-function monthLabel(key) { const [year, month] = key.split('-'); return `${year}年${Number(month)}月`; }
 function dateLabel(value) { const [, month, day] = value.split('-'); return `${Number(month)}月${Number(day)}日`; }
+
+function cycleName(cycle) {
+  const [year, month] = cycle.key.split('-');
+  return `${year}年${Number(month)}月分`;
+}
+
+function cyclePeriodLabel(cycle) {
+  const [startYear, startMonth, startDay] = cycle.start.split('-').map(Number);
+  const [endYear, endMonth, endDay] = cycle.end.split('-').map(Number);
+  return `${startYear}年${startMonth}月${startDay}日〜${endYear}年${endMonth}月${endDay}日`;
+}
 
 function showToast(message) {
   const toast = $('toast');
@@ -93,25 +113,65 @@ function renderEntries(container, entries, title) {
 }
 
 function renderHome() {
-  const currentMonth = monthKey(new Date());
-  const entries = sortEntriesNewest(entriesForMonth(state.entries, currentMonth));
-  const total = summarize(entries);
-  $('home-month').textContent = `${monthLabel(currentMonth)}のまとめ`;
-  $('home-balance').textContent = signedYen(total.balance);
-  $('home-income').textContent = yen(total.income);
-  $('home-expense').textContent = yen(total.expense);
-  renderEntries($('recent-list'), entries.slice(0, 5), '今月はまだ記録がありません');
+  const currentCycle = cycleForDate(localDate());
+  const cycleEntries = entriesForCycle(state.entries, currentCycle);
+  const cycleTotal = summarize(cycleEntries);
+  const allTimeTotal = summarize(state.entries);
+  $('home-month').textContent = `${cyclePeriodLabel(currentCycle)}のまとめ`;
+  $('home-balance').textContent = signedYen(allTimeTotal.balance);
+  $('home-income').textContent = yen(cycleTotal.income);
+  $('home-expense').textContent = yen(cycleTotal.expense);
+  renderEntries($('recent-list'), sortEntriesNewest(state.entries).slice(0, 5), 'まだ記録がありません');
+}
+
+function renderExpenseBreakdown(entries) {
+  const container = $('expense-breakdown');
+  const breakdown = expenseBreakdown(entries);
+  container.replaceChildren();
+  if (!breakdown.length) {
+    container.append(emptyState('この期間は支出がありません', '支出を記録するとカテゴリ別の割合が表示されます。'));
+    return;
+  }
+  breakdown.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'breakdown-row';
+    const meta = document.createElement('div');
+    meta.className = 'breakdown-meta';
+    const name = document.createElement('span');
+    name.className = 'breakdown-name';
+    name.textContent = item.categoryName;
+    const value = document.createElement('span');
+    value.className = 'breakdown-value';
+    const amount = document.createElement('strong');
+    amount.textContent = yen(item.amount);
+    const percentage = document.createElement('span');
+    percentage.textContent = `${item.percentage}%`;
+    value.append(amount, percentage);
+    meta.append(name, value);
+    const track = document.createElement('div');
+    track.className = 'breakdown-track';
+    track.setAttribute('aria-hidden', 'true');
+    const bar = document.createElement('span');
+    bar.className = 'breakdown-bar';
+    bar.style.width = `${item.percentage}%`;
+    track.append(bar);
+    row.append(meta, track);
+    container.append(row);
+  });
 }
 
 function renderHistory() {
-  const entries = sortEntriesNewest(entriesForMonth(state.entries, viewedMonth));
+  const cycle = cycleFromKey(viewedCycleKey);
+  const entries = sortEntriesNewest(entriesForCycle(state.entries, cycle));
   const total = summarize(entries);
-  $('history-month').textContent = monthLabel(viewedMonth);
+  $('history-month').textContent = cycleName(cycle);
+  $('report-period').textContent = cyclePeriodLabel(cycle);
   $('history-income').textContent = yen(total.income);
   $('history-expense').textContent = yen(total.expense);
   $('history-balance').textContent = signedYen(total.balance);
   $('history-count').textContent = `${entries.length}件`;
-  renderEntries($('history-list'), entries, 'この月の記録はありません');
+  renderExpenseBreakdown(entries);
+  renderEntries($('history-list'), entries, 'この期間の記録はありません');
 }
 
 function renderCategoryGroup(type, container) {
@@ -217,8 +277,7 @@ function confirmRemoval(title, message, action) {
 }
 
 function changeViewedMonth(offset) {
-  const [year, month] = viewedMonth.split('-').map(Number);
-  viewedMonth = monthKey(new Date(year, month - 1 + offset, 1));
+  viewedCycleKey = shiftCycle(viewedCycleKey, offset).key;
   renderHistory();
 }
 
