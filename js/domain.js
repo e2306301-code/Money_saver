@@ -77,6 +77,20 @@ export function summarize(entries) {
   return { ...total, balance: total.income - total.expense };
 }
 
+export function expenseBreakdown(entries) {
+  const amounts = new Map();
+  let total = 0;
+  for (const entry of entries) {
+    if (entry.type !== 'expense') continue;
+    total += entry.amount;
+    amounts.set(entry.categoryName, (amounts.get(entry.categoryName) ?? 0) + entry.amount);
+  }
+  if (total === 0) return [];
+  return [...amounts.entries()]
+    .map(([categoryName, amount]) => ({ categoryName, amount, percentage: Math.round(amount / total * 100) }))
+    .sort((a, b) => b.amount - a.amount || a.categoryName.localeCompare(b.categoryName, 'ja-JP'));
+}
+
 export function sortEntriesNewest(entries) {
   return [...entries].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));
 }

@@ -7,12 +7,43 @@ import {
   cycleFromKey,
   entriesForCycle,
   entriesForMonth,
+  expenseBreakdown,
   removeCustomCategory,
   shiftCycle,
   sortEntriesNewest,
   summarize,
   validateEntry,
 } from '../js/domain.js';
+
+test('支出をカテゴリ別に集計して金額順の構成比を返す', () => {
+  const result = expenseBreakdown([
+    { type: 'expense', amount: 3000, categoryName: '食費' },
+    { type: 'expense', amount: 1000, categoryName: '交通' },
+    { type: 'expense', amount: 1000, categoryName: '食費' },
+    { type: 'income', amount: 9000, categoryName: '給与' },
+  ]);
+  assert.deepEqual(result, [
+    { categoryName: '食費', amount: 4000, percentage: 80 },
+    { categoryName: '交通', amount: 1000, percentage: 20 },
+  ]);
+});
+
+test('支出がなければ構成比は空になる', () => {
+  assert.deepEqual(expenseBreakdown([{ type: 'income', amount: 5000, categoryName: '給与' }]), []);
+});
+
+test('削除済みカテゴリ名を集計し同額はカテゴリ名順にする', () => {
+  const result = expenseBreakdown([
+    { type: 'expense', amount: 1000, categoryName: 'い' },
+    { type: 'expense', amount: 1000, categoryName: 'あ' },
+    { type: 'expense', amount: 500, categoryName: '削除済みカテゴリ' },
+  ]);
+  assert.deepEqual(result, [
+    { categoryName: 'あ', amount: 1000, percentage: 40 },
+    { categoryName: 'い', amount: 1000, percentage: 40 },
+    { categoryName: '削除済みカテゴリ', amount: 500, percentage: 20 },
+  ]);
+});
 
 test('25日から翌24日までを同じ期間にする', () => {
   assert.deepEqual(cycleForDate('2026-10-25'), { key: '2026-10', start: '2026-10-25', end: '2026-11-24' });
