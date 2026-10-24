@@ -38,6 +38,36 @@ export function entriesForMonth(entries, monthKey) {
   return entries.filter(entry => entry.date.slice(0, 7) === monthKey);
 }
 
+function monthKeyFromParts(year, month) {
+  const date = new Date(Date.UTC(year, month - 1, 1));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+export function cycleFromKey(key) {
+  if (typeof key !== 'string' || !/^\d{4}-\d{2}$/.test(key)) throw new RangeError('Invalid cycle key');
+  const [year, month] = key.split('-').map(Number);
+  if (month < 1 || month > 12) throw new RangeError('Invalid cycle key');
+  const nextKey = monthKeyFromParts(year, month + 1);
+  return { key, start: `${key}-25`, end: `${nextKey}-24` };
+}
+
+export function cycleForDate(dateString) {
+  if (!isRealDate(dateString)) throw new RangeError('Invalid date');
+  const [year, month, day] = dateString.split('-').map(Number);
+  return cycleFromKey(day >= 25 ? dateString.slice(0, 7) : monthKeyFromParts(year, month - 1));
+}
+
+export function shiftCycle(key, offset) {
+  if (!Number.isInteger(offset)) throw new RangeError('Invalid cycle offset');
+  const base = cycleFromKey(key);
+  const [year, month] = base.key.split('-').map(Number);
+  return cycleFromKey(monthKeyFromParts(year, month + offset));
+}
+
+export function entriesForCycle(entries, cycle) {
+  return entries.filter(entry => entry.date >= cycle.start && entry.date <= cycle.end);
+}
+
 export function summarize(entries) {
   const total = entries.reduce((result, entry) => {
     if (entry.type === 'income') result.income += entry.amount;

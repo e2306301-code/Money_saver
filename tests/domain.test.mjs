@@ -3,12 +3,39 @@ import assert from 'node:assert/strict';
 import {
   DEFAULT_CATEGORIES,
   addCategory,
+  cycleForDate,
+  cycleFromKey,
+  entriesForCycle,
   entriesForMonth,
   removeCustomCategory,
+  shiftCycle,
   sortEntriesNewest,
   summarize,
   validateEntry,
 } from '../js/domain.js';
+
+test('25日から翌24日までを同じ期間にする', () => {
+  assert.deepEqual(cycleForDate('2026-10-25'), { key: '2026-10', start: '2026-10-25', end: '2026-11-24' });
+  assert.equal(cycleForDate('2026-11-24').key, '2026-10');
+  assert.equal(cycleForDate('2026-11-25').key, '2026-11');
+});
+
+test('年越し期間と前後移動を計算する', () => {
+  assert.deepEqual(cycleFromKey('2026-12'), { key: '2026-12', start: '2026-12-25', end: '2027-01-24' });
+  assert.equal(shiftCycle('2026-12', 1).key, '2027-01');
+  assert.equal(shiftCycle('2026-01', -1).key, '2025-12');
+});
+
+test('期間抽出は開始日と終了日を含み期間外を除外する', () => {
+  const entries = [
+    { id: 'before', date: '2026-10-24' },
+    { id: 'start', date: '2026-10-25' },
+    { id: 'end', date: '2026-11-24' },
+    { id: 'after', date: '2026-11-25' },
+  ];
+  assert.deepEqual(entriesForCycle(entries, cycleFromKey('2026-10')).map(entry => entry.id), ['start', 'end']);
+  assert.deepEqual(entriesForCycle(entries, cycleFromKey('2030-01')), []);
+});
 
 test('invalid amount, category and date are rejected', () => {
   const result = validateEntry({ type: 'expense', amount: '0.5', categoryId: '', date: 'bad', memo: '' });
